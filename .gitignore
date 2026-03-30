@@ -1,6 +1,13 @@
-iac/terraform/aws/*.pem
-iac/terraform/aws/.terraform/modules/modules.json
-iac/terraform/aws/.terraform/*
-iac/terraform/aws/.terraform.lock.hcl
-iac/terraform/aws/terraform.tfstate
-iac/terraform/aws/terraform.tfstate.backup
+# Terraform — state, lock e dados gerados em runtime
+IAC/terraform/aws/.terraform/
+IAC/terraform/aws/.terraform.lock.hcl
+IAC/terraform/aws/*.tfstate
+IAC/terraform/aws/*.tfstate.backup
+IAC/terraform/aws/*.tfplan
+IAC/terraform/aws/crash.log
+
+# Chaves privadas geradas pelo Terraform
+IAC/terraform/aws/*.pem
+
+# Política IAM gerada localmente (não contém segredos, mas é infra-específica)
+IAC/terraform/aws/terraform-iam-policy.json

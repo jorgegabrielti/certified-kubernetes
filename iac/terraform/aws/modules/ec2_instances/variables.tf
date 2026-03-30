@@ -1,33 +1,52 @@
+variable "instance_count" {
+  description = "Number of instances to create."
+  type        = number
+  default     = 1
+}
+
 variable "instance_type" {
-  description = "Type of EC2 instances"
-  type = string
+  description = "EC2 instance type."
+  type        = string
 }
 
 variable "instance_ami" {
-  description = "AMI ID for the EC2 instances"
-  type = string
+  description = "AMI ID for the EC2 instances."
+  type        = string
 }
 
-variable "instance_key_name" {
-  description = "Key pair name to use for EC2 instances"
-  type = string
+variable "key_name" {
+  description = "Name of the EC2 key pair."
+  type        = string
 }
 
-variable "instance_security_group_id" {
-  description = "List of security group IDs"
-  type = list(string)
+variable "sg_id" {
+  description = "Security group ID to attach to the instances."
+  type        = string
 }
-variable "instance_subnet_id"{
-  description = "The ID of the subnet"
-  type = string
+
+variable "subnet_id" {
+  description = "Subnet ID where instances will be launched."
+  type        = string
 }
 
 variable "user_data" {
-  description = "User data script to run on the EC2 instances"
-  type = string
+  description = "Rendered user data script (plain text; will be base64-encoded). Null = sem bootstrap."
+  type        = string
+  default     = null
+}
+
+variable "name_prefix" {
+  description = "Prefix applied to the Name tag."
+  type        = string
+}
+
+variable "role" {
+  description = "Node role label used in the Name tag (e.g. master, worker)."
+  type        = string
 }
 
 variable "tags" {
-  description = "Tags for EC2 instances"
-  type = map(string)
+  description = "Additional tags to apply to each instance."
+  type        = map(string)
+  default     = {}
 }

@@ -1,0 +1,16 @@
+# Terraform state and local data
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Lock file should be committed — do NOT ignore .terraform.lock.hcl
+
+# Keep tfvars.example, ignore sensitive overrides
+*.auto.tfvars
