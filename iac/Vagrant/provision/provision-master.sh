@@ -41,8 +41,8 @@ sudo chmod 600 /etc/netplan/50-vagrant.yaml
 sudo netplan apply
 
 sudo apt-get update
-sudo apt-get install -y net-tools
-sudo apt-get install -y apt-transport-https ca-certificates curl pgp
+sudo apt-get install -y net-tools conntrack socat ipset ipvsadm
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
 
 sudo curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
@@ -98,7 +98,9 @@ sudo systemctl daemon-reexec
 sudo systemctl restart kubelet
 
 
-sudo kubeadm init --apiserver-advertise-address=${INTERNAL_NETWORK_IP}
+sudo kubeadm init \
+  --apiserver-advertise-address=${INTERNAL_NETWORK_IP} \
+  --pod-network-cidr=10.244.0.0/16
 
 export HOME="/home/vagrant" USER="vagrant"
 #grep -i "ubuntu" /etc/passwd && export HOME="/home/ubuntu" USER="ubuntu" || export HOME="/home/vagrant" USER="vagrant"
@@ -126,14 +128,7 @@ rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 #  --helm-set k8sServiceHost=${INTERNAL_NETWORK_IP} \
 #  --helm-set k8sServicePort=6443
 
-# Identifier cilium stable version
-CILIUM_STABLE_VERSION=$(cilium version --as string | grep stable | cut -d':' -f2 | tr -d 'v')
-
-sleep 60 && cilium install \
-  --version ${CILIUM_STABLE_VERSION} \
-  --helm-set kubeProxyReplacement=false \
-  --helm-set k8sServiceHost=${INTERNAL_NETWORK_IP} \
-  --helm-set k8sServicePort=6443
+sleep 60 && cilium install
 
 kubeadm token create --print-join-command
 
