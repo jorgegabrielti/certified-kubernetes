@@ -1,240 +1,144 @@
-# Cluster Upgrade com kubeadm
+# Guia Pratico: Upgrade de Cluster Kubernetes com Kubeadm
 
-**Tópico CKA:** Cluster Architecture, Installation and Configuration (25%)
+Referencia: [CKA Curriculum v1.35](./CKA_Curriculum_v1.35.pdf) — dominio Cluster Architecture, Installation and Configuration (25%)
 
-Este guia cobre o upgrade de um cluster kubeadm seguindo o procedimento oficial.
-Execute cada etapa manualmente — é exatamente o que o exame CKA exige.
-
----
-
-## Regras do upgrade
-
-- **Nunca pule um minor version.** v1.31 → v1.32 → v1.33. Nunca v1.31 → v1.33.
-- **Sempre faça backup do ETCD antes de qualquer upgrade.**
-- **Sempre atualize o control plane antes dos workers.**
-- **Um worker por vez** — nunca draine dois workers simultaneamente em produção.
+> Execute sempre o backup do ETCD antes de iniciar qualquer upgrade.
+> Siga a ordem obrigatoria: control plane primeiro, workers um por vez.
 
 ---
 
-## Fase 0 — Verificar ponto de partida
+## Pre-requisitos
 
+- Cluster ativo com `kubectl get nodes` mostrando todos os nodes `Ready`.
+- Acesso SSH ao master01 e worker01 via `vagrant ssh`.
+- ETCD backup realizado (ver fase 1.1 abaixo).
+
+---
+
+## Fase 1 — Backup do ETCD (obrigatorio antes do upgrade)
+
+**1.1 — Criar snapshot**
 ```bash
-# Versão atual dos nodes
-kubectl get nodes
-
-# Versão dos componentes do control plane
-kubectl version
-kubeadm version
-
-# Versão instalada dos pacotes
-dpkg -l kubeadm kubelet kubectl | grep -E '^ii'
-
-# Repositório APT atual
-cat /etc/apt/sources.list.d/kubernetes.list
+ETCDCTL_API=3 etcdctl snapshot save /tmp/cka-pre-upgrade.db \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/server.crt \
+  --key=/etc/kubernetes/pki/etcd/server.key
 ```
 
----
-
-## Fase 1 — Backup do ETCD (obrigatório antes de qualquer upgrade)
-
+**1.2 — Validar integridade do snapshot**
 ```bash
-# Verificar endpoint e certs
-sudo ETCDCTL_API=3 etcdctl member list \
-  --endpoints=https://127.0.0.1:2379 \
-  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/server.crt \
-  --key=/etc/kubernetes/pki/etcd/server.key
-
-# Criar snapshot
-sudo ETCDCTL_API=3 etcdctl snapshot save /tmp/etcd-backup-pre-upgrade.db \
-  --endpoints=https://127.0.0.1:2379 \
-  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/server.crt \
-  --key=/etc/kubernetes/pki/etcd/server.key
-
-# Validar snapshot
-sudo ETCDCTL_API=3 etcdctl snapshot status /tmp/etcd-backup-pre-upgrade.db \
-  --write-out=table
+ETCDCTL_API=3 etcdctl snapshot status /tmp/cka-pre-upgrade.db --write-out=table
 ```
 
 ---
 
 ## Fase 2 — Upgrade do Control Plane (master01)
 
-> Execute todos os comandos a seguir **dentro de master01** via `vagrant ssh master01`.
+Execute cada passo no master01: `vagrant ssh master01` seguido de `sudo -i`.
 
-### 2.1 — Trocar repositório APT para o minor version alvo
-
-Substitua `v1.32` pela versão alvo do upgrade (ex.: v1.32, v1.33):
-
+**2.1 — Verificar versao atual**
 ```bash
-# Remover repositório anterior
-sudo rm /etc/apt/sources.list.d/kubernetes.list
-
-# Adicionar chave GPG e repositório da versão alvo
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key \
-  | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] \
-  https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' \
-  | sudo tee /etc/apt/sources.list.d/kubernetes.list
-
-sudo apt-get update
+kubectl get nodes
+kubeadm version
+kubelet --version
+kubectl version --client
 ```
 
-### 2.2 — Ver versões disponíveis do kubeadm
-
+**2.2 — Identificar proxima versao disponivel**
 ```bash
-sudo apt-cache madison kubeadm | head -10
+# Listar versoes disponiveis do kubeadm para o proximo minor
+apt-cache madison kubeadm | head -5
 ```
 
-Escolha a versão mais recente do minor version alvo (ex.: `1.32.x-1.1`).
-
-### 2.3 — Atualizar kubeadm
-
+**2.3 — Atualizar repositorio APT para o proximo minor version**
 ```bash
-sudo apt-mark unhold kubeadm
-sudo apt-get install -y kubeadm=1.32.x-1.1   # substitua x pela patch correta
-sudo apt-mark hold kubeadm
+# Exemplo: trocar para v1.32 (ajuste conforme a versao alvo)
+sed -i 's|v1.31|v1.32|' /etc/apt/sources.list.d/kubernetes.list
+apt-get update
+```
 
+**2.4 — Instalar novo kubeadm**
+```bash
+apt-get install -y kubeadm=1.32.0-1.1   # substitua pela versao alvo
 kubeadm version
 ```
 
-### 2.4 — Planejar e aplicar o upgrade
-
+**2.5 — Verificar plano de upgrade**
 ```bash
-# Ver o que será atualizado
-sudo kubeadm upgrade plan
-
-# Aplicar (substitua pela versão exata disponível no plan)
-sudo kubeadm upgrade apply v1.32.x
+kubeadm upgrade plan
 ```
 
-> O `kubeadm upgrade apply` atualiza: kube-apiserver, kube-controller-manager, kube-scheduler, kube-proxy, CoreDNS e o manifesto do ETCD. **Não atualiza kubelet nem kubectl.**
-
-### 2.5 — Drain do control plane
-
+**2.6 — Aplicar o upgrade no control plane**
 ```bash
-# No host local ou em outro terminal com kubectl configurado
-kubectl drain master01 --ignore-daemonsets --delete-emptydir-data
+kubeadm upgrade apply v1.32.0   # substitua pela versao alvo
 ```
 
-### 2.6 — Atualizar kubelet e kubectl
-
+**2.7 — Atualizar kubelet e kubectl no master01**
 ```bash
-# Ainda dentro de master01
-sudo apt-mark unhold kubelet kubectl
-sudo apt-get install -y kubelet=1.32.x-1.1 kubectl=1.32.x-1.1
-sudo apt-mark hold kubelet kubectl
-
-sudo systemctl daemon-reload
-sudo systemctl restart kubelet
-```
-
-### 2.7 — Reabilitar o control plane
-
-```bash
-kubectl uncordon master01
-
+apt-get install -y kubelet=1.32.0-1.1 kubectl=1.32.0-1.1
+systemctl daemon-reload
+systemctl restart kubelet
 # Validar
 kubectl get nodes
 ```
 
 ---
 
-## Fase 3 — Upgrade dos Worker Nodes (worker01, worker02, ...)
+## Fase 3 — Upgrade do Worker (worker01)
 
-> Repita para **cada worker, um por vez**.
+Execute os passos 3.1–3.2 no master01 e 3.3–3.4 no worker01.
 
-### 3.1 — Preparar o worker (execute no worker via `vagrant ssh workerXX`)
-
-```bash
-# Trocar repositório APT (mesma versão alvo do control plane)
-sudo rm /etc/apt/sources.list.d/kubernetes.list
-
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key \
-  | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] \
-  https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' \
-  | sudo tee /etc/apt/sources.list.d/kubernetes.list
-
-sudo apt-get update
-
-# Atualizar kubeadm
-sudo apt-mark unhold kubeadm
-sudo apt-get install -y kubeadm=1.32.x-1.1
-sudo apt-mark hold kubeadm
-
-# Upgrade da configuração local do node
-sudo kubeadm upgrade node
-```
-
-### 3.2 — Drain do worker (execute no host local ou master01)
-
+**3.1 — Drenar o worker (a partir do master01)**
 ```bash
 kubectl drain worker01 --ignore-daemonsets --delete-emptydir-data
 ```
 
-### 3.3 — Atualizar kubelet e kubectl no worker
-
+**3.2 — Verificar que worker01 esta em estado SchedulingDisabled**
 ```bash
-# Dentro do worker
-sudo apt-mark unhold kubelet kubectl
-sudo apt-get install -y kubelet=1.32.x-1.1 kubectl=1.32.x-1.1
-sudo apt-mark hold kubelet kubectl
-
-sudo systemctl daemon-reload
-sudo systemctl restart kubelet
+kubectl get nodes
+# worker01 deve aparecer como Ready,SchedulingDisabled
 ```
 
-### 3.4 — Reabilitar o worker
+**3.3 — Atualizar kubeadm, kubelet e kubectl no worker01**
+```bash
+# No worker01 (vagrant ssh worker01 ; sudo -i)
+sed -i 's|v1.31|v1.32|' /etc/apt/sources.list.d/kubernetes.list
+apt-get update
+apt-get install -y kubeadm=1.32.0-1.1
+kubeadm upgrade node
+apt-get install -y kubelet=1.32.0-1.1 kubectl=1.32.0-1.1
+systemctl daemon-reload
+systemctl restart kubelet
+```
 
+**3.4 — Reabilitar o worker (a partir do master01)**
 ```bash
 kubectl uncordon worker01
-
-# Validar
 kubectl get nodes
+# Ambos devem aparecer como Ready na nova versao
 ```
 
 ---
 
-## Fase 4 — Validação pós-upgrade
+## Validacao Final
 
 ```bash
-# Todos os nodes devem mostrar a nova versão e status Ready
 kubectl get nodes -o wide
-
-# Todos os pods do kube-system devem estar Running
-kubectl get pods -n kube-system
-
-# Cilium deve estar saudável
-cilium status
-
-# Versão dos componentes
-kubectl version
+kubectl get pods -A
+# ETCD deve estar saudavel
+ETCDCTL_API=3 etcdctl endpoint health \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/server.crt \
+  --key=/etc/kubernetes/pki/etcd/server.key
 ```
 
 ---
 
-## Fase 5 — Próximo minor version
+## Repita para cada minor version
 
-Se o alvo final exigir mais de um salto (ex.: v1.31 → v1.32 → v1.33):
-
-1. Repita **todas as fases** (0 a 4) trocando o repositório APT para o próximo minor.
-2. Faça novo backup do ETCD antes de cada rodada.
-3. Tire um snapshot Vagrant após cada minor version validado.
-
-```bash
-# No Windows, após validar cada versão:
-vagrant snapshot save master01 post-upgrade-v1.32
-vagrant snapshot save worker01 post-upgrade-v1.32
-```
-
----
-
-## Referências
-
-- [Upgrading kubeadm clusters](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/)
-- [ETCD backup and restore](https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/)
-- Tópico CKA: **Cluster Architecture, Installation and Configuration — 25%**
+Se o objetivo for upgrades encadeados (ex: v1.31 → v1.32 → v1.33):
+1. Execute as fases 1–3 completas para cada minor version.
+2. Nao pule minor versions — o kubeadm nao suporta upgrade de mais de um minor por vez.
+3. Atualize o repositorio APT (`sed -i`) antes de cada ciclo.

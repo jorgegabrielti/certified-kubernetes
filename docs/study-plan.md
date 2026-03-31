@@ -56,7 +56,7 @@ Objetivo: deixar o ambiente de treino repetível e pronto para uso diário.
 Critério de saída:
 - Você consegue subir, validar e destruir o lab sem hesitação.
 
-## Semana 1 - CKA Lista 1
+## Semana 1 - CKA Cluster Architecture
 
 Objetivo: dominar bootstrap, upgrade kubeadm e backup/restore de ETCD.
 Tópico CKA: Cluster Architecture, Installation and Configuration (25%)
@@ -64,7 +64,7 @@ Referência de upgrade: [CKA/howto-cluster-upgrade.md](../CKA/howto-cluster-upgr
 
 ### Segunda-feira
 
-1. Ler a Lista 1 em [CKA/README.md](../CKA/README.md) e o guia de upgrade.
+1. Ler [01-cluster-architecture-25pct/README.md](../CKA/01-cluster-architecture-25pct/README.md) e o guia de upgrade.
 2. Confirmar que o cluster está em `Ready` com `kubectl get nodes`.
 3. Anotar a versão atual de kubeadm, kubelet e kubectl com `dpkg -l`.
 
@@ -95,60 +95,60 @@ Referência de upgrade: [CKA/howto-cluster-upgrade.md](../CKA/howto-cluster-upgr
 Critério de saída:
 - Você executa o ciclo completo (upgrade → backup → destroy → restore) sem depender de consulta contínua.
 
-## Semana 2 - CKA Listas 2, 3 e 4
+## Semana 2 - CKA Workloads, Networking e Storage
 
 Objetivo: consolidar scheduling, rede e storage.
 
 ### Segunda-feira
 
-1. Executar a Lista 2.
+1. Executar os exercícios de [02-workloads-scheduling-15pct/](../CKA/02-workloads-scheduling-15pct/).
 2. Praticar `cordon`, `drain`, `uncordon`, taints e affinity.
 
 ### Terça-feira
 
-1. Repetir a Lista 2.
+1. Repetir os exercícios de workloads e scheduling.
 2. Corrigir o que ficou lento no dia anterior.
 
 ### Quarta-feira
 
-1. Executar a Lista 3.
+1. Executar os exercícios de [03-services-networking-20pct/](../CKA/03-services-networking-20pct/).
 2. Focar em `Service`, DNS e `NetworkPolicy`.
 
 ### Quinta-feira
 
-1. Executar a Lista 4.
+1. Executar os exercícios de [04-storage-10pct/](../CKA/04-storage-10pct/).
 2. Focar em PV, PVC, pod com volume e diagnóstico de PVC `Pending`.
 
 ### Sexta-feira
 
-1. Encadear um mini-simulado com tarefas das Listas 2, 3 e 4.
+1. Encadear um mini-simulado com tarefas dos três domínios.
 2. Medir tempo e pontos de falha.
 
 Critério de saída:
 - Você resolve scheduling, rede e storage sem copiar comandos prontos.
 
-## Semana 3 - CKA Listas 5, 6 e 7
+## Semana 3 - CKA Troubleshooting e RBAC
 
 Objetivo: ficar rápido em troubleshooting, RBAC e operação.
 
 ### Segunda-feira
 
-1. Executar a Lista 5.
+1. Executar os exercícios de [05-troubleshooting-30pct/](../CKA/05-troubleshooting-30pct/).
 2. Criar falhas propositais em probes, imagem e portas.
 
 ### Terça-feira
 
-1. Repetir a Lista 5.
+1. Repetir os exercícios de troubleshooting.
 2. Resolver usando `describe`, `logs`, eventos e `journalctl`.
 
 ### Quarta-feira
 
-1. Executar a Lista 6.
+1. Executar os exercícios de RBAC em [01-cluster-architecture-25pct/](../CKA/01-cluster-architecture-25pct/).
 2. Focar em `ServiceAccount`, `Role`, `RoleBinding` e `kubectl auth can-i`.
 
 ### Quinta-feira
 
-1. Executar a Lista 7.
+1. Executar os exercícios de workloads e scheduling restantes.
 2. Focar em probes, rollout, rollback e análise operacional.
 
 ### Sexta-feira
@@ -159,33 +159,33 @@ Objetivo: ficar rápido em troubleshooting, RBAC e operação.
 Critério de saída:
 - Você tem um fluxo claro de diagnóstico e validação.
 
-## Semana 4 - CKA Listas 8, 9 e 10
+## Semana 4 - CKA Simulado Final
 
 Objetivo: fechar a trilha de CKA em modo simulado.
 
 ### Segunda-feira
 
-1. Executar a Lista 8.
-2. Focar em namespaces, quotas e isolamento.
+1. Executar exercícios de namespaces, quotas e isolamento (domínios 01 e 02).
+2. Focar em criação rápida de recursos via `kubectl`.
 
 ### Terça-feira
 
-1. Executar a Lista 9.
-2. Focar em manutenção, join token, adição e remoção de worker.
+1. Executar exercícios de manutenção de cluster em [01-cluster-architecture-25pct/](../CKA/01-cluster-architecture-25pct/).
+2. Focar em join token, adição e remoção de worker.
 
 ### Quarta-feira
 
-1. Executar a Lista 10 parcialmente.
+1. Cobrir os domínios de maior peso: Troubleshooting (30%) e Cluster Architecture (25%).
 2. Treinar o fluxo completo de administração de cluster.
 
 ### Quinta-feira
 
-1. Repetir as tarefas mais lentas da Lista 10.
+1. Repetir as tarefas mais lentas das sessões anteriores.
 2. Refinar sequência e tempo.
 
 ### Sexta-feira
 
-1. Fazer um simulado de CKA em 1 hora com seleção de tarefas das 10 listas.
+1. Fazer um simulado completo de CKA em 1 hora cobrindo todos os domínios.
 2. Registrar baseline de tempo da certificação.
 
 Critério de saída:

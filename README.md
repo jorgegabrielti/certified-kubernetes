@@ -88,7 +88,7 @@ terraform destroy
 
 - **Vagrant** >= 2.3
 - **VirtualBox** >= 7.0
-- ~12 GB de RAM disponível (2 VMs × 4 GB)
+- ~6 GB de RAM disponível (2 VMs × 2 GB)
 
 ### 1. Subir e provisionar o control plane
 

@@ -51,8 +51,6 @@ Ordem logica de estudo (pre-requisito → derivado):
 
 ## 2. Instalacao com Kubeadm
 
-Referencia: [howto-cluster-upgrade.md](../howto-cluster-upgrade.md)
-
 ### Conceitos
 - Fases do `kubeadm init` (preflight, certs, kubeconfig, manifests, addons)
 - `--pod-network-cidr` e escolha de CNI
