@@ -14,9 +14,10 @@ BOX_CONFIGS = YAML.load_file 'conf/box_configs.yaml'
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   BOX_CONFIGS.each do |env|
     config.vm.define env['name'] do |box|
-      box.vm.box         = env['box']
-      box.vm.hostname    = env['hostname']
-      box.vm.box_version = env['box_version'] 
+      box.vm.box              = env['box']
+      box.vm.hostname         = env['hostname']
+      box.vm.box_version      = env['box_version']
+      box.vm.boot_timeout     = 600
       box.vm.synced_folder env['dir_host'], env['dir_guest'], type: "virtualbox"
 
       box.vm.provider env['box_provider'] do |vb|
