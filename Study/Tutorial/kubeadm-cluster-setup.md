@@ -294,32 +294,53 @@ kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/
 
 ### Opção B — Cilium (eBPF, recomendado para estudo de networking avançado)
 
+> Baseado na [documentação oficial do Cilium](https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/).
+
+**1. Instalar o Cilium CLI:**
+
 ```bash
-# Instalar Cilium CLI
-CILIUM_CLI_VERSION=$(curl -fsSL https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
+CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
 CLI_ARCH=amd64
-[ "$(uname -m)" = "aarch64" ] && CLI_ARCH=arm64
-
-cd /tmp
-curl -fsSL --remote-name-all \
-  "https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz" \
-  "https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz.sha256sum"
-sha256sum --check "cilium-linux-${CLI_ARCH}.tar.gz.sha256sum"
-sudo tar -xzf "cilium-linux-${CLI_ARCH}.tar.gz" -C /usr/local/bin
-rm "cilium-linux-${CLI_ARCH}.tar.gz" "cilium-linux-${CLI_ARCH}.tar.gz.sha256sum"
+if [ "$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi
+curl -L --fail --remote-name-all \
+  https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
+sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
+rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 ```
 
-```bash
-# Instalar Cilium no cluster
-cilium install
-```
+**2. Instalar o Cilium no cluster:**
 
 ```bash
-# Aguardar Cilium ficar pronto
+cilium install --version 1.16.6
+```
+
+> O installer detecta automaticamente a melhor configuração para o cluster. Não passe flags `--helm-set` adicionais — elas podem impedir a criação do DaemonSet.
+
+**3. Validar a instalação:**
+
+```bash
 cilium status --wait
 ```
 
-> **Nota:** Não passe flags `--helm-set` adicionais na instalação inicial — elas podem impedir a criação do DaemonSet. O `cilium install` sem parâmetros detecta automaticamente a configuração do cluster (kubeProxyReplacement, service host/port).
+Saída esperada:
+```
+   /¯¯\
+/¯¯\__/¯¯\    Cilium:         OK
+\__/¯¯\__/    Operator:       OK
+/¯¯\__/¯¯\    Hubble:         disabled
+\__/¯¯\__/    ClusterMesh:    disabled
+   \__/
+
+DaemonSet    cilium           Desired: 1, Ready: 1/1, Available: 1/1
+Deployment   cilium-operator  Desired: 1, Ready: 1/1, Available: 1/1
+```
+
+**4. (Opcional) Teste de conectividade:**
+
+```bash
+cilium connectivity test
+```
 
 ### Verificar CNI
 
