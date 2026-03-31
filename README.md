@@ -84,11 +84,88 @@ terraform destroy
 
 ## Quickstart — Local (VirtualBox)
 
+### Pré-requisitos
+
+- **Vagrant** >= 2.3
+- **VirtualBox** >= 7.0
+- ~12 GB de RAM disponível (2 VMs × 4 GB)
+
+### 1. Subir e provisionar o control plane
+
 ```bash
 cd IAC/Vagrant
-vagrant up
-vagrant ssh master
+vagrant up master01
 ```
+
+O script `provision-master.sh` executa automaticamente:
+- Instalação de `kubelet`, `kubeadm`, `kubectl` v1.31
+- Configuração do `containerd` com `SystemdCgroup = true`
+- `kubeadm init --apiserver-advertise-address=192.168.1.100 --pod-network-cidr=10.244.0.0/16`
+- Instalação do Cilium CNI via `cilium install`
+- Reboot automático ao final
+
+> O provisionamento leva ~5 minutos. O `cilium install` aguarda 60 s após o init para o API server estabilizar.
+
+### 2. Subir e provisionar o worker
+
+```bash
+vagrant up worker01
+```
+
+O script `provision-worker.sh` instala os mesmos pacotes e reinicia o nó. O join **não é automático** — execute na etapa seguinte.
+
+### 3. Fazer o join do worker ao cluster
+
+```bash
+# Gerar o join command no master
+vagrant ssh master01 -c "kubeadm token create --print-join-command"
+
+# Executar no worker (substitua o token e o hash pelo output acima)
+vagrant ssh worker01 -c "sudo kubeadm join 192.168.1.100:6443 \
+  --token <TOKEN> \
+  --discovery-token-ca-cert-hash sha256:<HASH>"
+```
+
+### 4. Validar o cluster
+
+```bash
+# Nodes
+vagrant ssh master01 -c "kubectl get nodes -o wide"
+
+# Pods do sistema
+vagrant ssh master01 -c "kubectl get pods -A"
+
+# Status do Cilium
+vagrant ssh master01 -c "cilium status"
+```
+
+Resultado esperado:
+
+```
+NAME       STATUS   ROLES           VERSION    INTERNAL-IP
+master01   Ready    control-plane   v1.31.x    192.168.1.100
+worker01   Ready    <none>          v1.31.x    192.168.1.110
+```
+
+```
+Cilium:             OK
+Operator:           OK
+Envoy DaemonSet:    OK
+DaemonSet cilium    Desired: 2, Ready: 2/2
+```
+
+### Destruir o ambiente
+
+```bash
+vagrant destroy -f
+```
+
+### Topologia da rede local
+
+| VM | IP | Papel |
+|---|---|---|
+| master01 | `192.168.1.100` | control-plane |
+| worker01 | `192.168.1.110` | worker |
 
 > Requer Vagrant + VirtualBox instalados localmente.
 
