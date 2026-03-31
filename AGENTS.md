@@ -34,7 +34,9 @@ certified-kubernetes/
 │   │       └── ec2_instances/  ← EC2 with count, public IP, gp3 volume
 │   │           └── templates/  ← userDataMaster.sh.tpl, userDataWorker.sh.tpl
 │   └── Vagrant/                ← Local dev with VirtualBox (legacy)
-├── Study/                      ← CKA study notes and exercises
+├── CKA/                        ← CKA practice tracks and curriculum
+├── CKAD/                       ← CKAD practice tracks and curriculum
+├── CKS/                        ← CKS practice tracks and curriculum
 ├── docs/
 │   ├── architecture.md
 │   ├── specs/

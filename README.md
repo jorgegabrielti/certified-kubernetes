@@ -196,10 +196,6 @@ certified-kubernetes/
 │       ├── Vagrantfile
 │       ├── conf/
 │       └── provision/
-├── Study/                            # Material de estudo (aulas e tutoriais)
-│   ├── aulas/                        # Aulas por dia (dia 1 → aulas 1-9)
-│   ├── Howto/                        # Scripts e procedimentos úteis
-│   └── Tutorial/                     # Tutoriais passo a passo
 ├── CKA/                              # Conteúdo específico CKA
 ├── CKAD/                             # Conteúdo específico CKAD
 ├── CKS/                              # Conteúdo específico CKS
