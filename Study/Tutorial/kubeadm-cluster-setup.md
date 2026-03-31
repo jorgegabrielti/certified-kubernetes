@@ -307,17 +307,19 @@ curl -fsSL --remote-name-all \
 sha256sum --check "cilium-linux-${CLI_ARCH}.tar.gz.sha256sum"
 sudo tar -xzf "cilium-linux-${CLI_ARCH}.tar.gz" -C /usr/local/bin
 rm "cilium-linux-${CLI_ARCH}.tar.gz" "cilium-linux-${CLI_ARCH}.tar.gz.sha256sum"
+```
 
+```bash
 # Instalar Cilium no cluster
-PRIVATE_IP=$(kubectl get node -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
-cilium install \
-  --helm-set kubeProxyReplacement=false \
-  --helm-set k8sServiceHost="${PRIVATE_IP}" \
-  --helm-set k8sServicePort=6443
+cilium install
+```
 
+```bash
 # Aguardar Cilium ficar pronto
 cilium status --wait
 ```
+
+> **Nota:** Não passe flags `--helm-set` adicionais na instalação inicial — elas podem impedir a criação do DaemonSet. O `cilium install` sem parâmetros detecta automaticamente a configuração do cluster (kubeProxyReplacement, service host/port).
 
 ### Verificar CNI
 
@@ -487,17 +489,43 @@ sudo crictl logs <container-id>
 
 ---
 
-### Certificado TLS inválido
+### Certificado TLS inválido (`x509: certificate signed by unknown authority`)
+
+**Causa:** O `kubeadm init` foi executado mais de uma vez (ex: após um `kubeadm reset`), gerando novos certificados. O `~/.kube/config` ainda contém os certificados antigos.
 
 ```bash
-# x509: certificate signed by unknown authority
-unset KUBECONFIG
-
-# Ou reconfigurar:
-mv $HOME/.kube $HOME/.kube.bak
-mkdir $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+# Reconfigurar kubeconfig com os certificados atuais
+sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
+kubectl get nodes
+```
+
+Para confirmar que os certs batem:
+```bash
+# Cert que o API Server está servindo
+echo | openssl s_client -connect 10.0.1.26:6443 2>/dev/null | openssl x509 -noout -issuer -dates
+
+# CA no kubeconfig
+grep certificate-authority-data ~/.kube/config | awk '{print $2}' | base64 -d | openssl x509 -noout -issuer -dates
+```
+
+> **Regra:** Sempre re-copie o `admin.conf` após cada `kubeadm init`.
+
+---
+
+### Cilium instalado mas DaemonSet não criado (`daemonsets.apps "cilium" not found`)
+
+**Causa:** O `cilium install` foi executado com flags incompatíveis (ex: `--helm-set kubeProxyReplacement`, `--helm-set k8sServiceHost`) que conflitam com a versão instalada ou com a configuração do cluster, fazendo o install falhar silenciosamente.
+
+```bash
+# Verificar se há pods do Cilium
+kubectl get pods -n kube-system | grep cilium
+
+# Desinstalar e reinstalar sem flags extras
+cilium uninstall --wait
+cilium install
+cilium status --wait
+```
 ```
 
 ---
