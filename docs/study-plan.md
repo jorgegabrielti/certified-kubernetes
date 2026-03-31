@@ -58,40 +58,42 @@ Critério de saída:
 
 ## Semana 1 - CKA Lista 1
 
-Objetivo: dominar bootstrap, upgrade e backup/restore de ETCD.
+Objetivo: dominar bootstrap, upgrade kubeadm e backup/restore de ETCD.
+Tópico CKA: Cluster Architecture, Installation and Configuration (25%)
+Referência de upgrade: [CKA/howto-cluster-upgrade.md](../CKA/howto-cluster-upgrade.md)
 
 ### Segunda-feira
 
-1. Ler a Lista 1 em [CKA/README.md](../CKA/README.md).
-2. Executar apenas bootstrap do cluster.
-3. Registrar o fluxo de criação do cluster.
+1. Ler a Lista 1 em [CKA/README.md](../CKA/README.md) e o guia de upgrade.
+2. Confirmar que o cluster está em `Ready` com `kubectl get nodes`.
+3. Anotar a versão atual de kubeadm, kubelet e kubectl com `dpkg -l`.
 
 ### Terça-feira
 
-1. Repetir bootstrap do cluster.
-2. Executar upgrade do cluster.
-3. Registrar a ordem correta do upgrade.
+1. Fazer backup do ETCD antes de qualquer mudança.
+2. Atualizar o repositório APT para o próximo minor version.
+3. Executar o upgrade completo do control plane (fases 2.1 a 2.7 do guia).
 
 ### Quarta-feira
 
-1. Criar recursos de teste no cluster.
-2. Fazer snapshot do ETCD.
-3. Validar que o arquivo de backup foi criado corretamente.
+1. Executar o upgrade do worker01 (fases 3.1 a 3.4 do guia).
+2. Validar que todos os nodes estão `Ready` na nova versão com `kubectl get nodes -o wide`.
+3. Se houver mais de um minor version disponível, repetir o processo com novo backup do ETCD.
 
 ### Quinta-feira
 
-1. Deletar os recursos criados.
-2. Restaurar o ETCD.
-3. Confirmar o retorno dos recursos.
+1. Criar recursos de teste: `Deployment`, `Service` e `ConfigMap`.
+2. Fazer snapshot do ETCD no estado atual: `/tmp/cka-snapshot.db`.
+3. Validar o snapshot com `etcdctl snapshot status`.
 
 ### Sexta-feira
 
-1. Executar a Lista 1 inteira em sequência.
-2. Cronometrar o tempo total.
-3. Anotar onde houve travamento.
+1. Deletar os recursos criados na quinta-feira.
+2. Restaurar o ETCD a partir do snapshot.
+3. Confirmar que os recursos voltaram e anotar o fluxo completo de memória.
 
 Critério de saída:
-- Você faz backup e restore de ETCD sem depender de consulta contínua.
+- Você executa o ciclo completo (upgrade → backup → destroy → restore) sem depender de consulta contínua.
 
 ## Semana 2 - CKA Listas 2, 3 e 4
 
