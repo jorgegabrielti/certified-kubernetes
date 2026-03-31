@@ -228,6 +228,26 @@ certified-kubernetes/
 
 ---
 
+## Trilhas por Certificação
+
+| Trilha | Arquivo | Objetivo |
+|--------|---------|----------|
+| CKA | [CKA/README.md](CKA/README.md) | Administracao de cluster, lifecycle, ETCD, troubleshooting e operacao |
+| CKAD | [CKAD/README.md](CKAD/README.md) | Desenvolvimento e entrega de workloads Kubernetes |
+| CKS | [CKS/README.md](CKS/README.md) | Hardening, supply chain security, runtime security e resposta a incidentes |
+
+Cada trilha contem 10 listas praticas. O ritmo recomendado e executar o ciclo completo varias vezes ate atingir pelo menos 10 repeticoes totais durante a preparacao.
+
+## Dicas Oficiais de Prova
+
+- Linux Foundation: https://docs.linuxfoundation.org/tc-docs/certification/tips-cka-and-ckad
+- As provas CKA e CKAD sao hands-on, com cerca de 15 a 20 tarefas em 2 horas.
+- O ambiente de prova usa hosts dedicados por tarefa, com `ssh`, `sudo`, `kubectl`, alias `k` e `yq` disponiveis.
+- O host base nao deve ser reiniciado durante a prova.
+- Antes do exame, valide maquina, webcam, microfone, rede e PSI Secure Browser.
+
+---
+
 ## Topologia do Cluster
 
 ```
