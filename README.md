@@ -219,7 +219,7 @@ certified-kubernetes/
 | [docs/architecture.md](docs/architecture.md) | Topologia, módulos Terraform, SG rules, bootstrap flow |
 | [docs/specs/feature-vanilla-cluster-aws.md](docs/specs/feature-vanilla-cluster-aws.md) | Requisitos e critérios de aceitação |
 | [docs/adr/adr-001-terraform-structure.md](docs/adr/adr-001-terraform-structure.md) | Decisão sobre estrutura modular |
-| [docs/study-plan.md](docs/study-plan.md) | Passo a passo guiado por semana para CKA, CKAD e CKS |
+| [docs/study-plan.md](docs/study-plan.md) | Passo a passo guiado de segunda a sexta, com 1 hora por dia |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Como contribuir e workflow de desenvolvimento |
 | [AGENTS.md](AGENTS.md) | Guia de uso com Claude Code e GitHub Copilot |
 
@@ -235,7 +235,7 @@ certified-kubernetes/
 
 Cada trilha contem 10 listas praticas. O ritmo recomendado e executar o ciclo completo varias vezes ate atingir pelo menos 10 repeticoes totais durante a preparacao.
 
-Para saber exatamente o que fazer em cada semana, siga o roteiro em [docs/study-plan.md](docs/study-plan.md).
+Para saber exatamente o que fazer em cada semana, de segunda a sexta, com 1 hora por dia, siga o roteiro em [docs/study-plan.md](docs/study-plan.md).
 
 ## Dicas Oficiais de Prova
 

@@ -1,216 +1,443 @@
 # Plano Guiado de Estudos
 
-Este documento define um passo a passo objetivo para estudar CKA, CKAD e CKS usando este repositório.
+Este documento organiza os estudos em 12 semanas, de segunda a sexta, com 1 hora por dia.
 
-## Princípios do plano
+## Regras do plano
 
-- Estude em blocos semanais com meta de entrega clara.
-- Trabalhe sempre com cronômetro.
-- Faça tudo no terminal, com o mínimo possível de dependência de interface gráfica.
-- Ao final de cada semana, registre o que falhou, o que tomou mais tempo e quais comandos precisam virar memória muscular.
-- O objetivo não é apenas concluir as listas, mas repeti-las até ganhar velocidade.
+- Cada sessão dura 60 minutos.
+- Estude sempre com cronômetro.
+- Trabalhe no terminal sempre que possível.
+- Ao final de cada sexta-feira, registre erros, comandos lentos e tópicos inseguros.
+- Não avance de semana só porque concluiu uma vez. Avance quando o fluxo estiver previsível.
 
-## Rotina padrão por sessão
+## Estrutura fixa de 1 hora por dia
 
-1. Preparar o lab.
-2. Executar a lista da semana sem consultar notas por 15 a 30 minutos.
-3. Consultar documentação oficial apenas para os pontos travados.
-4. Refazer a mesma lista do zero corrigindo os erros.
-5. Registrar tempo final, erros e comandos-chave.
+Use esta divisão como padrão:
+
+1. 10 min: preparar lab, abrir material e revisar objetivo do dia.
+2. 35 min: executar a tarefa principal sem consultar anotações no início.
+3. 10 min: corrigir erros, consultar documentação oficial e repetir pontos travados.
+4. 5 min: registrar tempo, falhas e comandos importantes.
 
 ## Semana 0 - Preparacao do ambiente
 
-Objetivo: deixar o lab funcional e o fluxo de estudo reproduzivel.
+Objetivo: deixar o ambiente de treino repetível e pronto para uso diário.
 
-Passo a passo:
-1. Ler o [README.md](../README.md) inteiro para entender a estrutura do projeto.
-2. Escolher o ambiente principal de treino: AWS via Terraform ou local via Vagrant.
-3. Subir um cluster funcional seguindo o quickstart correspondente.
-4. Validar `kubectl get nodes`, `kubectl get pods -A` e `cilium status`.
-5. Destruir e subir novamente o ambiente para garantir repetibilidade.
-6. Definir sua rotina semanal: dias, horário e duração de cada sessão.
+### Segunda-feira
 
-Critério de saída:
-- Você consegue subir e destruir o lab sem hesitação.
-- Você sabe onde estão as trilhas em CKA, CKAD e CKS.
+1. Ler o [README.md](../README.md).
+2. Entender a estrutura do repositório.
+3. Escolher o ambiente principal: AWS ou Vagrant.
 
-## Semana 1 - Base de CKA
+### Terça-feira
 
-Objetivo: dominar bootstrap do cluster, upgrade e backup de ETCD.
+1. Executar o quickstart do ambiente escolhido.
+2. Subir o cluster pela primeira vez.
+3. Registrar os comandos necessários para bootstrap.
 
-Passo a passo:
-1. Executar a Lista 1 da [CKA/README.md](../CKA/README.md).
-2. Repetir a Lista 1 no mínimo 3 vezes.
-3. Cronometrar especialmente as tarefas de `kubeadm init`, upgrade e snapshot.
-4. Criar um pequeno checklist pessoal para backup e restore do ETCD.
-5. Encerrar a semana executando a lista inteira sem apoio externo.
+### Quarta-feira
 
-Critério de saída:
-- Você consegue fazer backup e restore do ETCD sem consultar comandos prontos.
-- Você consegue explicar a ordem correta de upgrade do control plane e dos workers.
+1. Validar `kubectl get nodes`.
+2. Validar `kubectl get pods -A`.
+3. Validar `cilium status`.
 
-## Semana 2 - Scheduling, rede e storage no CKA
+### Quinta-feira
 
-Objetivo: ganhar confiança operacional em agendamento, conectividade e persistência.
+1. Destruir o ambiente.
+2. Subir tudo novamente do zero.
+3. Medir o tempo total do processo.
 
-Passo a passo:
-1. Executar as Listas 2, 3 e 4 da [CKA/README.md](../CKA/README.md).
-2. Repetir a Lista 2 duas vezes com foco em `cordon`, `drain`, `uncordon`, taints e affinity.
-3. Repetir a Lista 3 duas vezes com foco em `Service`, DNS, `NetworkPolicy` e troubleshooting de rede.
-4. Repetir a Lista 4 duas vezes com foco em PV, PVC e diagnóstico de PVC `Pending`.
-5. Fechar a semana com uma execução encadeada de scheduling + rede + storage.
+### Sexta-feira
+
+1. Revisar tudo sem consultar o README no início.
+2. Confirmar que o ambiente sobe de forma previsível.
+3. Definir o horário fixo das próximas semanas.
 
 Critério de saída:
-- Você identifica rápido problemas de selector, policy, mount e scheduling.
-- Você executa tasks de rede e storage sem depender de copiar comandos.
+- Você consegue subir, validar e destruir o lab sem hesitação.
 
-## Semana 3 - Troubleshooting e operacao no CKA
+## Semana 1 - CKA Lista 1
 
-Objetivo: resolver falhas reais de cluster com rapidez.
+Objetivo: dominar bootstrap, upgrade e backup/restore de ETCD.
 
-Passo a passo:
-1. Executar as Listas 5, 6 e 7 da [CKA/README.md](../CKA/README.md).
-2. Criar falhas propositais em probes, imagens, portas, RBAC e runtime.
-3. Resolver tudo usando `describe`, `logs`, `events`, `journalctl` e manifestos.
-4. Repetir ao menos 2 cenarios de RBAC e 2 cenarios de rollback.
-5. Registrar um fluxo padrão de troubleshooting: sintoma, hipótese, evidência, correção, validação.
+### Segunda-feira
 
-Critério de saída:
-- Você tem um método consistente de troubleshooting.
-- Você sabe quando olhar cluster, node, pod, log ou evento sem perder tempo.
+1. Ler a Lista 1 em [CKA/README.md](../CKA/README.md).
+2. Executar apenas bootstrap do cluster.
+3. Registrar o fluxo de criação do cluster.
 
-## Semana 4 - Fechamento de CKA
+### Terça-feira
 
-Objetivo: consolidar administração de cluster em modo simulado.
+1. Repetir bootstrap do cluster.
+2. Executar upgrade do cluster.
+3. Registrar a ordem correta do upgrade.
 
-Passo a passo:
-1. Executar as Listas 8, 9 e 10 da [CKA/README.md](../CKA/README.md).
-2. Fazer um simulado de 2 horas cobrindo ao menos 6 tarefas misturadas.
-3. Repetir o simulado corrigindo apenas os pontos fracos.
-4. Escolher as 3 tarefas mais lentas e treiná-las isoladamente.
-5. Registrar sua primeira baseline de tempo para CKA.
+### Quarta-feira
 
-Critério de saída:
-- Você completa um simulado coerente dentro do tempo.
-- Você sabe quais tópicos ainda precisam de reforço antes de avançar.
+1. Criar recursos de teste no cluster.
+2. Fazer snapshot do ETCD.
+3. Validar que o arquivo de backup foi criado corretamente.
 
-## Semana 5 - Base de CKAD
+### Quinta-feira
 
-Objetivo: ganhar velocidade criando workloads corretamente.
+1. Deletar os recursos criados.
+2. Restaurar o ETCD.
+3. Confirmar o retorno dos recursos.
 
-Passo a passo:
-1. Executar as Listas 1, 2 e 3 da [CKAD/README.md](../CKAD/README.md).
-2. Repetir criação de `Deployment`, `Service`, `ConfigMap`, `Secret`, `initContainer` e sidecar.
-3. Praticar geração de YAML com `kubectl create --dry-run=client -o yaml`.
-4. Validar sempre com `kubectl get`, `describe`, `logs` e testes de conectividade.
-5. Refazer todos os exercícios reduzindo o tempo da primeira execução.
+### Sexta-feira
+
+1. Executar a Lista 1 inteira em sequência.
+2. Cronometrar o tempo total.
+3. Anotar onde houve travamento.
 
 Critério de saída:
-- Você cria manifestos básicos rápido e com poucos erros.
-- Você sabe transformar pod simples em deployment sem perder comportamento.
+- Você faz backup e restore de ETCD sem depender de consulta contínua.
 
-## Semana 6 - Entrega e rollout no CKAD
+## Semana 2 - CKA Listas 2, 3 e 4
 
-Objetivo: dominar atualizações, escalonamento e execução agendada.
+Objetivo: consolidar scheduling, rede e storage.
 
-Passo a passo:
-1. Executar as Listas 4, 5 e 6 da [CKAD/README.md](../CKAD/README.md).
-2. Treinar rollout, rollback, HPA, Jobs, CronJobs, exposição e `NetworkPolicy`.
-3. Simular uma entrega ruim e recuperar via rollback.
-4. Validar cada alteração com status e testes simples.
-5. Repetir os cenarios mais lentos ate que virem rotina.
+### Segunda-feira
 
-Critério de saída:
-- Você faz rollout e rollback sem hesitar.
-- Você sabe depurar falhas de Jobs, Services e Ingress rapidamente.
+1. Executar a Lista 2.
+2. Praticar `cordon`, `drain`, `uncordon`, taints e affinity.
 
-## Semana 7 - Fechamento de CKAD
+### Terça-feira
 
-Objetivo: consolidar configuração aplicacional e debug.
+1. Repetir a Lista 2.
+2. Corrigir o que ficou lento no dia anterior.
 
-Passo a passo:
-1. Executar as Listas 7, 8, 9 e 10 da [CKAD/README.md](../CKAD/README.md).
-2. Fazer um simulado de 2 horas com foco em construir e corrigir workloads.
-3. Repetir o simulado tentando usar menos tempo de consulta.
-4. Refinar um checklist de validação final: pods, services, env, volumes, securityContext, rollout.
-5. Registrar a segunda baseline de tempo, agora para CKAD.
+### Quarta-feira
 
-Critério de saída:
-- Você consegue montar uma aplicação inteira de ponta a ponta sob pressão.
-- Você encontra e corrige erros de manifesto com rapidez.
+1. Executar a Lista 3.
+2. Focar em `Service`, DNS e `NetworkPolicy`.
 
-## Semana 8 - Base de CKS
+### Quinta-feira
 
-Objetivo: iniciar a trilha de segurança com controles essenciais.
+1. Executar a Lista 4.
+2. Focar em PV, PVC, pod com volume e diagnóstico de PVC `Pending`.
 
-Passo a passo:
-1. Executar as Listas 1, 2 e 3 da [CKS/README.md](../CKS/README.md).
-2. Praticar RBAC mínimo, `securityContext`, seccomp e redução de privilégios.
-3. Validar que workloads inseguros são corrigidos sem quebrar a aplicação.
-4. Registrar quais controles você consegue aplicar de memória.
-5. Repetir os cenarios até que virem padrão operacional.
+### Sexta-feira
+
+1. Encadear um mini-simulado com tarefas das Listas 2, 3 e 4.
+2. Medir tempo e pontos de falha.
 
 Critério de saída:
-- Você reconhece rapidamente manifestos inseguros.
-- Você corrige RBAC e pod security com confiança.
+- Você resolve scheduling, rede e storage sem copiar comandos prontos.
 
-## Semana 9 - Supply chain, rede e dados no CKS
+## Semana 3 - CKA Listas 5, 6 e 7
 
-Objetivo: ampliar sua cobertura de segurança para imagens, tráfego e secrets.
+Objetivo: ficar rápido em troubleshooting, RBAC e operação.
 
-Passo a passo:
-1. Executar as Listas 4, 5 e 6 da [CKS/README.md](../CKS/README.md).
-2. Treinar scan de imagem, políticas de admissão, `NetworkPolicy` default-deny e proteção de secrets.
-3. Simular imagem vulnerável, regra de rede aberta demais e secret exposto.
-4. Corrigir cada cenário e provar a correção com comandos objetivos.
-5. Repetir os cenarios até reduzir tempo e erros.
+### Segunda-feira
+
+1. Executar a Lista 5.
+2. Criar falhas propositais em probes, imagem e portas.
+
+### Terça-feira
+
+1. Repetir a Lista 5.
+2. Resolver usando `describe`, `logs`, eventos e `journalctl`.
+
+### Quarta-feira
+
+1. Executar a Lista 6.
+2. Focar em `ServiceAccount`, `Role`, `RoleBinding` e `kubectl auth can-i`.
+
+### Quinta-feira
+
+1. Executar a Lista 7.
+2. Focar em probes, rollout, rollback e análise operacional.
+
+### Sexta-feira
+
+1. Fazer uma sessão só de troubleshooting misto.
+2. Resolver pelo menos 3 falhas diferentes em 1 hora.
 
 Critério de saída:
-- Você sabe validar conformidade, não só aplicar configuração.
-- Você consegue explicar o risco mitigado em cada ação.
+- Você tem um fluxo claro de diagnóstico e validação.
 
-## Semana 10 - Fechamento de CKS
+## Semana 4 - CKA Listas 8, 9 e 10
 
-Objetivo: terminar a trilha de segurança em modo incidente e simulado.
+Objetivo: fechar a trilha de CKA em modo simulado.
 
-Passo a passo:
-1. Executar as Listas 7, 8, 9 e 10 da [CKS/README.md](../CKS/README.md).
-2. Rodar um simulado com incidente, contenção e recuperação.
-3. Repetir o simulado buscando decisões mais rápidas e menos retrabalho.
-4. Montar um checklist final de hardening e resposta a incidente.
-5. Registrar a terceira baseline de tempo, agora para CKS.
+### Segunda-feira
+
+1. Executar a Lista 8.
+2. Focar em namespaces, quotas e isolamento.
+
+### Terça-feira
+
+1. Executar a Lista 9.
+2. Focar em manutenção, join token, adição e remoção de worker.
+
+### Quarta-feira
+
+1. Executar a Lista 10 parcialmente.
+2. Treinar o fluxo completo de administração de cluster.
+
+### Quinta-feira
+
+1. Repetir as tarefas mais lentas da Lista 10.
+2. Refinar sequência e tempo.
+
+### Sexta-feira
+
+1. Fazer um simulado de CKA em 1 hora com seleção de tarefas das 10 listas.
+2. Registrar baseline de tempo da certificação.
 
 Critério de saída:
-- Você consegue conter e corrigir incidentes sem se perder na sequência.
-- Você fecha um simulado de segurança com validação final objetiva.
+- Você encerra a trilha CKA com visão clara dos pontos fortes e fracos.
+
+## Semana 5 - CKAD Listas 1, 2 e 3
+
+Objetivo: ganhar velocidade em manifestos e workloads básicos.
+
+### Segunda-feira
+
+1. Executar a Lista 1 em [CKAD/README.md](../CKAD/README.md).
+2. Focar em `Deployment`, `Service`, labels e probes.
+
+### Terça-feira
+
+1. Repetir a Lista 1.
+2. Gerar YAML com `kubectl create --dry-run=client -o yaml`.
+
+### Quarta-feira
+
+1. Executar a Lista 2.
+2. Focar em `ConfigMap`, `Secret`, env e volume.
+
+### Quinta-feira
+
+1. Executar a Lista 3.
+2. Focar em sidecar, `initContainer` e compartilhamento de volume.
+
+### Sexta-feira
+
+1. Refazer as 3 listas em sequência reduzindo o tempo da primeira execução.
+
+Critério de saída:
+- Você cria manifestos básicos de aplicação com fluidez.
+
+## Semana 6 - CKAD Listas 4, 5 e 6
+
+Objetivo: dominar rollout, Jobs, CronJobs e exposição.
+
+### Segunda-feira
+
+1. Executar a Lista 4.
+2. Focar em rollout, rollback e HPA.
+
+### Terça-feira
+
+1. Repetir a Lista 4.
+2. Medir tempo de correção de rollout ruim.
+
+### Quarta-feira
+
+1. Executar a Lista 5.
+2. Focar em `Job`, `CronJob`, retries e limpeza.
+
+### Quinta-feira
+
+1. Executar a Lista 6.
+2. Focar em `Service`, `Ingress` e `NetworkPolicy`.
+
+### Sexta-feira
+
+1. Fazer mini-simulado de entrega e rollback.
+2. Validar tudo com comandos curtos e objetivos.
+
+Critério de saída:
+- Você entrega e corrige workloads rapidamente.
+
+## Semana 7 - CKAD Listas 7, 8, 9 e 10
+
+Objetivo: fechar a trilha de CKAD com simulado prático.
+
+### Segunda-feira
+
+1. Executar a Lista 7.
+2. Focar em persistência e estado.
+
+### Terça-feira
+
+1. Executar a Lista 8.
+2. Focar em `securityContext` e acesso mínimo.
+
+### Quarta-feira
+
+1. Executar a Lista 9.
+2. Focar em debug de aplicação.
+
+### Quinta-feira
+
+1. Executar a Lista 10.
+2. Montar uma aplicação completa de ponta a ponta.
+
+### Sexta-feira
+
+1. Fazer simulado de CKAD em 1 hora.
+2. Registrar baseline de tempo da certificação.
+
+Critério de saída:
+- Você consegue construir e corrigir workloads sob pressão.
+
+## Semana 8 - CKS Listas 1, 2 e 3
+
+Objetivo: construir base de hardening, RBAC e pod security.
+
+### Segunda-feira
+
+1. Executar a Lista 1 em [CKS/README.md](../CKS/README.md).
+2. Focar em hardening do cluster.
+
+### Terça-feira
+
+1. Executar a Lista 2.
+2. Focar em RBAC mínimo e validação com `kubectl auth can-i`.
+
+### Quarta-feira
+
+1. Executar a Lista 3.
+2. Focar em `securityContext`, seccomp e capabilities.
+
+### Quinta-feira
+
+1. Repetir as tarefas mais lentas das três listas.
+2. Validar se os workloads continuam funcionais.
+
+### Sexta-feira
+
+1. Fazer mini-simulado de hardening.
+2. Registrar os controles que você já aplica de memória.
+
+Critério de saída:
+- Você reconhece rapidamente configurações inseguras em cluster e pods.
+
+## Semana 9 - CKS Listas 4, 5 e 6
+
+Objetivo: expandir a trilha de segurança para supply chain, rede e dados.
+
+### Segunda-feira
+
+1. Executar a Lista 4.
+2. Focar em scan de imagens e política de admissão.
+
+### Terça-feira
+
+1. Executar a Lista 5.
+2. Focar em `NetworkPolicy` default-deny e isolamento.
+
+### Quarta-feira
+
+1. Executar a Lista 6.
+2. Focar em secrets e proteção de dados.
+
+### Quinta-feira
+
+1. Repetir os cenários mais lentos.
+2. Validar a correção com comandos objetivos.
+
+### Sexta-feira
+
+1. Fazer mini-simulado de conformidade e correção.
+2. Registrar o risco mitigado em cada cenário.
+
+Critério de saída:
+- Você sabe comprovar que a mitigação realmente funcionou.
+
+## Semana 10 - CKS Listas 7, 8, 9 e 10
+
+Objetivo: fechar a trilha de CKS com detecção, políticas e incidentes.
+
+### Segunda-feira
+
+1. Executar a Lista 7.
+2. Focar em detecção e contenção runtime.
+
+### Terça-feira
+
+1. Executar a Lista 8.
+2. Focar em políticas de admissão.
+
+### Quarta-feira
+
+1. Executar a Lista 9.
+2. Focar em resposta a incidente.
+
+### Quinta-feira
+
+1. Executar a Lista 10.
+2. Montar um fluxo completo de segurança do cluster.
+
+### Sexta-feira
+
+1. Fazer simulado de CKS em 1 hora.
+2. Registrar baseline de tempo da certificação.
+
+Critério de saída:
+- Você consegue conter, corrigir e validar incidentes com objetividade.
 
 ## Semana 11 - Integracao entre certificacoes
 
-Objetivo: cruzar administração, desenvolvimento e segurança no mesmo ambiente.
+Objetivo: cruzar administração, desenvolvimento e segurança no mesmo lab.
 
-Passo a passo:
+### Segunda-feira
+
 1. Montar um lab do zero.
-2. Executar uma lista de CKA, uma de CKAD e uma de CKS na mesma semana.
-3. Priorizar tarefas onde um domínio afeta o outro, como rollout seguro, RBAC de aplicação e troubleshooting de policy.
-4. Registrar quais conhecimentos se repetem entre as três provas.
-5. Fazer um simulado híbrido de 2 horas.
+2. Executar uma tarefa típica de CKA.
+
+### Terça-feira
+
+1. No mesmo lab, executar uma tarefa típica de CKAD.
+
+### Quarta-feira
+
+1. No mesmo lab, executar uma tarefa típica de CKS.
+
+### Quinta-feira
+
+1. Repetir os pontos onde um domínio interfere no outro.
+2. Exemplos: rollout seguro, RBAC de aplicação, network policy e troubleshooting.
+
+### Sexta-feira
+
+1. Fazer um simulado híbrido em 1 hora.
+2. Registrar conhecimentos que se repetem entre as três provas.
 
 Critério de saída:
-- Você começa a enxergar Kubernetes como sistema único, não como provas isoladas.
+- Você enxerga Kubernetes como um sistema único.
 
 ## Semana 12 - Revisao final e repeticao intensiva
 
-Objetivo: transformar pontos fracos em rotina.
+Objetivo: transformar fraquezas em rotina operacional.
 
-Passo a passo:
-1. Revisar todas as anotações de erro acumuladas desde a Semana 0.
-2. Separar os 10 cenarios mais lentos ou mais propensos a falha.
-3. Reexecutar esses 10 cenarios em bloco.
-4. Fazer pelo menos um simulado final por certificação.
-5. Definir se o foco inicial da prova será CKA, CKAD ou CKS com base no seu desempenho real.
+### Segunda-feira
+
+1. Revisar todas as anotações acumuladas.
+2. Selecionar os 10 cenários mais lentos.
+
+### Terça-feira
+
+1. Reexecutar 3 cenários lentos.
+
+### Quarta-feira
+
+1. Reexecutar mais 3 cenários lentos.
+
+### Quinta-feira
+
+1. Reexecutar os 4 cenários restantes.
+
+### Sexta-feira
+
+1. Fazer um simulado final da certificação que estiver mais madura.
+2. Definir a ordem real de tentativa entre CKA, CKAD e CKS.
 
 Critério de saída:
-- Você tem clareza objetiva sobre a certificação mais madura para tentar primeiro.
+- Você sabe exatamente qual prova tentar primeiro e por quê.
 
 ## Meta de repeticao
 
@@ -220,4 +447,4 @@ Critério de saída:
 
 ## Regra de ouro
 
-Se uma tarefa levou tempo demais, não marque como concluída apenas porque funcionou uma vez. Refaça até que o caminho fique previsível e rápido.
+Se uma tarefa levou tempo demais, não considere concluída só porque funcionou uma vez. Refaça até ficar rápida, previsível e defensável.
