@@ -28,8 +28,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ### Requirements: vagrant plugin install vagrant-disksize
       box.disksize.size = env['disk']
       box.vm.network "forwarded_port", guest: env['guest_port'], host: env['host_port'],  host_ip: "127.0.0.1"
-      box.vm.network "private_network", type: "dhcp", virtualbox__intnet: true
-      box.vm.provision "shell", path: env['file_provision']
+      box.vm.network "private_network", ip: env['ip']
+      # box.vm.provision "shell", path: env['file_provision']  # comentado — provisioning manual
     end
   end
 end

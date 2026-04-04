@@ -93,8 +93,8 @@ variable "worker_count" {
   default     = 2
 
   validation {
-    condition     = var.worker_count >= 1 && var.worker_count <= 5
-    error_message = "worker_count must be between 1 and 5."
+    condition     = var.worker_count >= 0 && var.worker_count <= 5
+    error_message = "worker_count must be between 0 and 5."
   }
 }
 

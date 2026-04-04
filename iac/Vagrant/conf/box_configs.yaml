@@ -13,6 +13,7 @@
   vmgui: 'false'
   host_port: '1020' 
   guest_port: '443'
+  ip: '192.168.56.10'
   file_provision: './provision/provision-master.sh'
   
 
@@ -30,5 +31,6 @@
   vmgui: 'false'
   host_port: '1021' 
   guest_port: '8443'
+  ip: '192.168.56.11'
   file_provision: './provision/provision-worker.sh'
 ...
