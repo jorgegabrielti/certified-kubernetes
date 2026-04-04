@@ -19,7 +19,7 @@ Referencias:
 
 ## Como usar
 
-- Estude um dominio por vez, comecando pelo de maior peso (Troubleshooting 30%).
+- Estude um dominio por vez, na ordem logica: 01 → 02 → 03 → 04 → 05.
 - Cada diretorio tem sub-topicos alinhados ao curriculo oficial, exercicios praticos e um checklist.
 - Execute os exercicios no lab Vagrant (ver [IAC/Vagrant/](../IAC/Vagrant/)).
 - Registre tempo, comandos-chave, erros e correcoes em cada sessao.

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: primeiro-replicaset
+  labels:
+    app: primeiro-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: primeiro-replicaset
+  template:
+    metadata:
+      labels:
+        app: primeiro-replicaset
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        env: 
+          - name: POD_COLOR
+            value: blue

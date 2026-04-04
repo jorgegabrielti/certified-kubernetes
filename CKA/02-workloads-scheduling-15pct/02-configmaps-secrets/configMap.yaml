@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: primeiro-configmap
+data:
+  key1: "value1"
+  key2: "value2"
+
+  key.parameters: |
+    chave3: "valor3"

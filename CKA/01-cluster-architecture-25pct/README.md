@@ -1,21 +1,79 @@
 # Cluster Architecture, Installation and Configuration — 25%
 
-Referencia: [CKA Curriculum v1.35](../CKA_Curriculum_v1.35.pdf)
+Referência: [CKA Curriculum v1.35](../CKA_Curriculum_v1.35.pdf)
+
+> Domínio de maior peso após Troubleshooting (25%). Cobre desde a infraestrutura base até operações críticas de cluster.
 
 ---
 
-## Sub-topicos
+## Sub-tópicos
 
-Ordem logica de estudo (pre-requisito → derivado):
+Ordem lógica de estudo (pré-requisito → derivado):
 
-| # | Topico | Peso estimado |
-|---|--------|---------------|
-| 1 | Provision underlying infrastructure to deploy a Kubernetes cluster | Medio |
-| 2 | Use Kubeadm to install a basic cluster | Alto |
-| 3 | Manage role based access control (RBAC) | Alto |
-| 4 | Manage a highly-available Kubernetes cluster | Medio |
-| 5 | Implement etcd backup and restore | Alto |
-| 6 | Perform a version upgrade on a Kubernetes cluster using Kubeadm | Alto |
+| # | Tópico | Peso estimado | Conteúdo |
+|---|--------|:-------------:|----------|
+| 1 | Provision underlying infrastructure to deploy a Kubernetes cluster | Médio | [01-infrastructure-provisioning/](./01-infrastructure-provisioning/) |
+| 2 | Use Kubeadm to install a basic cluster | **Alto** | [02-kubeadm-install/](./02-kubeadm-install/) |
+| 3 | Manage role based access control (RBAC) | **Alto** | [03-rbac/](./03-rbac/) |
+| 4 | Manage a highly-available Kubernetes cluster | Médio | [04-ha-cluster/](./04-ha-cluster/) |
+| 5 | Implement etcd backup and restore | **Alto** | [05-etcd-backup-restore/](./05-etcd-backup-restore/) |
+| 6 | Perform a version upgrade on a Kubernetes cluster using Kubeadm | **Alto** | [06-cluster-upgrade/](./06-cluster-upgrade/) |
+
+---
+
+## O que cada sub-tópico cobre
+
+### [01 — Provision Underlying Infrastructure](./01-infrastructure-provisioning/)
+- Requisitos de SO: swap desabilitado, módulos de kernel (`br_netfilter`, `overlay`), `ip_forward`
+- Instalação e configuração do `containerd` com `SystemdCgroup = true`
+- Instalação de `kubeadm`, `kubelet`, `kubectl` via repositório APT versionado
+- Configuração de rede do host (IPs estáticos, `/etc/hosts`)
+- Checklist de validação de pré-requisitos
+
+### [02 — Kubeadm Install](./02-kubeadm-install/)
+- Fases do `kubeadm init` (preflight → addons)
+- `--pod-network-cidr` e escolha de CNI (Cilium, Calico)
+- Arquivo de configuração declarativo (`KubeadmConfig` em YAML)
+- `kubeadm join` com token e discovery hash
+- Inspeção de static pod manifests em `/etc/kubernetes/manifests/`
+
+### [03 — RBAC](./03-rbac/)
+- `Role` e `RoleBinding` — escopo de namespace
+- `ClusterRole` e `ClusterRoleBinding` — escopo de cluster
+- `ServiceAccount` — identidade de pods e workloads
+- `kubectl auth can-i` — verificação de permissões
+- API groups e como descobrir o correto para cada recurso
+
+### [04 — Alta Disponibilidade (HA)](./04-ha-cluster/)
+- Topologia stacked etcd vs external etcd
+- Load balancer externo para o `kube-apiserver`
+- `kubeadm join --control-plane` — adição de segundo control plane
+- Quorum do etcd e tolerância a falhas
+
+### [05 — Backup e Restore do ETCD](./05-etcd-backup-restore/)
+- `etcdctl snapshot save` — criação do snapshot com flags obrigatórias
+- `etcdctl snapshot restore` — restauração para diretório novo
+- Atualização do manifesto `/etc/kubernetes/manifests/etcd.yaml`
+- Referência rápida com todos os comandos para prova
+
+### [06 — Upgrade com Kubeadm](./06-cluster-upgrade/)
+- Sequência obrigatória: control plane → workers (um por vez)
+- Troca de repositório APT por minor version
+- `kubeadm upgrade plan` e `kubeadm upgrade apply`
+- `kubectl drain` / `kubectl uncordon`
+- Referência rápida completa com todos os passos
+
+---
+
+## Checklist de Domínio
+
+- [ ] Validar pré-requisitos de infraestrutura (swap, br_netfilter, containerd)
+- [ ] Instalar cluster do zero com kubeadm
+- [ ] Gerar token de join e adicionar worker
+- [ ] Criar Role/ClusterRole e validar com `auth can-i`
+- [ ] Fazer backup ETCD, deletar recursos, restaurar e validar
+- [ ] Fazer upgrade de pelo menos 1 minor version (end-to-end)
+- [ ] Cronometrar ciclo completo de upgrade (meta < 20 min)
 
 ---
 
@@ -62,7 +120,7 @@ Ordem logica de estudo (pre-requisito → derivado):
 **2.1 — Inicializar cluster do zero (lab Vagrant)**
 1. Destruir e recriar o lab: `vagrant destroy -f && vagrant up master01`.
 2. Confirmar que o control plane sobe sem erros de preflight.
-3. Instalar CNI (Cilium ou Flannel).
+3. Instalar CNI (Cilium).
 4. Executar `kubeadm join` no worker01.
 5. Validar: `kubectl get nodes` mostra ambos `Ready`.
 
